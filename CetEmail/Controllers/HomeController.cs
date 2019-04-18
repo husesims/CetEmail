@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using CetEmail.Models;
+using System.Net.Mail;
+using System.Net;
 
 namespace CetEmail.Controllers
 {
@@ -15,6 +17,37 @@ namespace CetEmail.Controllers
             return View();
         }
 
+        public IActionResult SendMail()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult SendMail(MailModel input)
+        {
+            if(ModelState.IsValid)
+            {
+                using(var mail=new MailMessage())
+                {
+                    mail.From = new MailAddress("cet322@gmail.com", "!!CET 322!!");
+                    mail.To.Add(input.To);
+                    mail.CC.Add("huseyinsimsek@gmail.com");
+                    mail.Subject = input.Subject;
+                    mail.Body = input.Body;
+                    mail.IsBodyHtml = false;
+                    using (var smtpClient=new SmtpClient())
+                    {
+                        smtpClient.Host = "smtp.gmail.com";
+                        smtpClient.Port = 587;
+                        smtpClient.UseDefaultCredentials = false;
+                        smtpClient.Credentials = new NetworkCredential("cet322@gmail.com", "123Qaz*=");
+                        smtpClient.EnableSsl = true;
+                        smtpClient.Send(mail);
+                    }
+
+                }
+            }
+            return View();
+        }
         public IActionResult Privacy()
         {
             return View();
